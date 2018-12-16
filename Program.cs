@@ -4,68 +4,77 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Histogram
+namespace zadania
 {
     class Program
     {
+        
         static void Main(string[] args)
         {
-            double[] tab = new double[3];
-            while (true)
-            {
-                Console.Write("Podaj liczbę Ax : ");
-                if (double.TryParse(Console.ReadLine(), out tab[0])) { break; }
-                else { Console.WriteLine("Błędna wartość"); }
-            }
-            while (true)
-            {
-                Console.Write("Podaj liczbę Bx : ");
-                if (double.TryParse(Console.ReadLine(), out tab[1])) { break; }
-                else { Console.WriteLine("Błędna wartość"); }
-            }
-            while (true)
-            {
-                Console.Write("Podaj wyraz wolny C  : ");
-                if (double.TryParse(Console.ReadLine(), out tab[2])) { break; }
-                else { Console.WriteLine("Błędna wartość"); }
-            }
-            int liczbaPierwiastków;
-            double delta = liczDelte(tab);
-            if (delta > 0) { liczbaPierwiastków = 2; liczZerowe(delta, tab,liczbaPierwiastków); }
-            else if (delta == 0) { liczbaPierwiastków = 1; liczZerowe(delta, tab,liczbaPierwiastków); }
-            else { Console.WriteLine("Brak miejsc zerowych delta < 0"); }
+
+            // for (){}
+            zadanie3_16();
+            //zadanie3_22();
+            //-----------------------------
+            // do{}while()
+            //-----------------------------
+            //while(){}
+            //-----------------------------
 
         }
 
-        static double liczDelte(double[] tab)
+        static void zadanie3_16()
         {
-            return (tab[1] * tab[1]) - (4 * tab[0] * tab[2]);
+            Console.Write("How many number i have to draw : ");
+
+            double avg=0;
+            int num=0,min,max;
+            int[] tab;
+            for(int i=0;i!=2;)
+            {
+                if (int.TryParse(Console.ReadLine(), out int n)) { num = n; break;}
+                else { Console.Write("Wrong operand.Please try one more time : "); }
+            }
+            tab = new int[num];
+            Random rand = new Random();
+            for (int i = 0; i < tab.Length; i++)
+            {
+                tab[i] = rand.Next(1, 100);
+                avg += tab[i];
+            }
+            min = tab[0]; max = tab[0];
+            for (int i = 0; i < tab.Length; i++)
+            {
+                if(tab[i] < min) { min = tab[i]; }
+                else if (tab[i] > max) { max = tab[i]; }
+            }
+            avg /= tab.Length;
+            foreach (var item in tab)
+            {
+                Console.Write($"{item} ");
+            }     
+            Console.WriteLine($"The min value == {min}, the max value == {max}, the avrage is {avg} ");
         }
 
-        static void liczZerowe(double delta, double[] tab,int x)
-        {
-            switch (x)
-            {
-                case 1:
-                    { Console.WriteLine($"Delta == 0 jet jedno miejsce zerowe == {(-tab[1] / (2 * tab[0])):#.##}"); } 
-                    break;
-                case 2:
-                    {
-                        double x1, x2;
-                        x1 = (-tab[1] + Math.Sqrt(delta)) / (2 * tab[0]);
-                        x2 = (-tab[1] - Math.Sqrt(delta)) / (2 * tab[0]);
 
-                        Console.WriteLine($"Miejsca zerowe x1 == {x1:#.##}  i  x2 == {x2:#.##} delta == {delta:#.##}");
-                    }
-                    break;
-                default:
-                    break;
+
+
+        static void zadanie3_22()
+        {
+            char x;
+            for (int i = 65; i <= 90; i++)
+            {
+                x = Convert.ToChar(i);
+                Console.Write($"{x} ");
             }
+            Console.WriteLine("");
+            for (int i = 90; i >=  65; i--)
+            {
+                x = Convert.ToChar(i);
+                Console.Write($"{x} ");
+            }
+            Console.WriteLine("");
+
         }
     }
 }
-
-
-
-
-
