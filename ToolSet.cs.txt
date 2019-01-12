@@ -1,0 +1,169 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ZapisDoPliku
+{
+    class Program
+    {
+        public const string NAGLOWEK_PLIKU = "[BazaDanych]";
+        public const string ROZMIAR_TABLICY = "RozmiarTablicy";
+        public const string NAGLOWEK_OSOBY = "[Osoba]";
+        public const string KLUCZ_IMIE = "Imie";
+        public const string KLUCZ_NAZWISKO = "Nazwisko";
+        public const string KLUCZ_WIEK = "Wiek";
+
+        public struct Osoba
+        {
+            public string Imie;
+            public string Nazwisko;
+            public int Wiek;
+        }
+
+        public static bool OdczytZPliku(string NazwaPliku, out Osoba[] ListaOsob)
+        {
+            ListaOsob = null;
+
+            if (string.IsNullOrEmpty(NazwaPliku))
+                return false;
+
+            try
+            {
+                using (StreamReader plik = new StreamReader(NazwaPliku))
+                {
+                    string Linia = plik.ReadLine();
+
+                    if (Linia != NAGLOWEK_PLIKU)
+                        throw new Exception("B³êdny nag³ówek pliku!");
+
+                    Linia = plik.ReadLine();
+                    string[] KluczWartosc = Linia.Split('=');
+
+                    if (KluczWartosc[0] != ROZMIAR_TABLICY)
+                        throw new Exception("B³êdna informacja o dlugosci tablicy!");
+
+                    int Dlugosc = int.Parse(KluczWartosc[1]);
+
+                    if (Dlugosc < 1)
+                        throw new Exception("Z³y rozmiar tablicy! Musi byc >=1");
+
+                    ListaOsob = new Osoba[Dlugosc];
+
+                    int IndeksOsoby = -1;
+
+                    while (true)
+                    {
+                        if (plik.EndOfStream)
+                            break;
+
+                        Linia = plik.ReadLine();
+
+                        if (Linia == NAGLOWEK_OSOBY)
+                            IndeksOsoby++;
+
+                        if (IndeksOsoby > Dlugosc - 1)
+                            break;
+
+                        if (Linia != NAGLOWEK_OSOBY)
+                        {
+                            KluczWartosc = Linia.Split('=');
+                            if (KluczWartosc.Length == 2)
+                            {
+                                if (KluczWartosc[0] == KLUCZ_IMIE)
+                                    ListaOsob[IndeksOsoby].Imie = KluczWartosc[1];
+                                else if (KluczWartosc[0] == KLUCZ_NAZWISKO)
+                                    ListaOsob[IndeksOsoby].Nazwisko = KluczWartosc[1];
+                                else if (KluczWartosc[0] == KLUCZ_WIEK)
+                                {
+                                    int.TryParse(KluczWartosc[1], out ListaOsob[IndeksOsoby].Wiek);
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"B³¹d: {e.Message}");
+                ListaOsob = null;
+            }
+
+            return false;
+        }
+        public static bool ZapiszDoPliku(string NazwaPliku, Osoba[] ListaOsob)
+        {
+            if (string.IsNullOrEmpty(NazwaPliku) || ListaOsob == null || ListaOsob.Length<1)
+            {
+                return false;
+            }
+
+            try
+            {
+                using (StreamWriter plik = new StreamWriter(NazwaPliku))                
+                {
+                    plik.WriteLine(NAGLOWEK_PLIKU);
+                    plik.WriteLine($"{ROZMIAR_TABLICY}={ListaOsob.Length}");
+
+                    foreach (var osoba in ListaOsob)
+                    {
+                        plik.WriteLine(NAGLOWEK_OSOBY);
+                        plik.WriteLine($"{KLUCZ_IMIE}={osoba.Imie}");
+                        plik.WriteLine($"{KLUCZ_NAZWISKO}={osoba.Nazwisko}");
+                        plik.WriteLine($"{KLUCZ_WIEK}={osoba.Wiek}");
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"B³¹d: {e.Message}");
+            }
+
+            return false;
+        }
+        static void Main(string[] args)
+        {
+            Osoba[] ListaOsob = new Osoba[2];
+            /*
+            ListaOsob[0].Imie = "Jacek";
+            ListaOsob[0].Nazwisko = "K.";
+            ListaOsob[0].Wiek = 36;
+
+            ListaOsob[1].Imie = "Zdzis³aw";
+            ListaOsob[1].Nazwisko = "Dyrman";
+            ListaOsob[1].Wiek = 50;
+
+            if (ZapiszDoPliku(@"d:/plikzdanymi.txt",ListaOsob))
+            {
+                Console.WriteLine("Ekstra");
+            }
+            else
+            {
+                Console.WriteLine("Buba");
+            }
+            */
+
+            if (OdczytZPliku(@"d:/plikzdanymi.txt", out ListaOsob))
+            {
+                foreach (var osoba in ListaOsob)
+                {
+                    Console.WriteLine($"Imie={osoba.Imie} Nazwisko={osoba.Nazwisko} Wiek={osoba.Wiek}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Buba");
+            }
+
+            Console.ReadKey();
+
+        }
+    }
+}
